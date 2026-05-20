@@ -1,0 +1,256 @@
+titulo: "Assessment de Procesos"
+subtitulo: "Retail de Productos Tecnológicos"
+version: 1.0
+
+cliente:
+  etiqueta_razon_social: "Razón Social del Cliente"
+  etiqueta_fecha: "Fecha del Assessment"
+
+areas:
+  - id: inventario
+    nombre: "Gestión de Inventario"
+    descripcion: "Evalúa los procesos de control, seguimiento y reposición de stock"
+    icono: "📦"
+    preguntas:
+      - id: inv_01
+        texto: "¿El sistema de inventario refleja el stock en tiempo real?"
+        peso: 3
+      - id: inv_02
+        texto: "¿Existe un proceso automatizado de reposición de stock?"
+        peso: 2
+      - id: inv_03
+        texto: "¿Se realizan auditorías de inventario periódicas y sistemáticas?"
+        peso: 2
+      - id: inv_04
+        texto: "¿El sistema alerta automáticamente sobre niveles de stock crítico?"
+        peso: 3
+      - id: inv_05
+        texto: "¿El inventario está integrado con los canales de venta (POS, e-commerce)?"
+        peso: 3
+
+  - id: ventas
+    nombre: "Ventas y Atención al Cliente"
+    descripcion: "Evalúa los procesos comerciales, CRM y experiencia del cliente"
+    icono: "🛒"
+    preguntas:
+      - id: vta_01
+        texto: "¿Utilizan un sistema CRM para gestionar las relaciones con clientes?"
+        peso: 3
+      - id: vta_02
+        texto: "¿El proceso de venta está digitalizado (POS, cotizaciones electrónicas)?"
+        peso: 2
+      - id: vta_03
+        texto: "¿Existe un canal de soporte postventa estructurado y con seguimiento?"
+        peso: 2
+      - id: vta_04
+        texto: "¿Se realiza seguimiento sistemático de oportunidades y leads de venta?"
+        peso: 2
+      - id: vta_05
+        texto: "¿Los canales de atención (teléfono, chat, email, presencial) están integrados?"
+        peso: 3
+
+  - id: logistica
+    nombre: "Logística y Distribución"
+    descripcion: "Evalúa los procesos de despacho, tracking y gestión de depósito"
+    icono: "🚚"
+    preguntas:
+      - id: log_01
+        texto: "¿El proceso de despacho y preparación de pedidos está automatizado?"
+        peso: 3
+      - id: log_02
+        texto: "¿Se realiza tracking de envíos en tiempo real para el cliente?"
+        peso: 2
+      - id: log_03
+        texto: "¿La gestión del depósito/bodega cuenta con un sistema WMS?"
+        peso: 3
+      - id: log_04
+        texto: "¿Está optimizada la planificación de rutas y entregas?"
+        peso: 2
+
+  - id: ecommerce
+    nombre: "E-commerce y Omnicanalidad"
+    descripcion: "Evalúa la presencia digital, integración de canales y experiencia online"
+    icono: "🌐"
+    preguntas:
+      - id: ecm_01
+        texto: "¿La tienda online está integrada con el inventario en tiempo real?"
+        peso: 3
+      - id: ecm_02
+        texto: "¿Se comercializa a través de marketplaces (Mercado Libre, Amazon, etc.)?"
+        peso: 2
+      - id: ecm_03
+        texto: "¿La experiencia de compra es consistente entre todos los canales?"
+        peso: 3
+      - id: ecm_04
+        texto: "¿El proceso de logística inversa (devoluciones) está digitalizado?"
+        peso: 2
+      - id: ecm_05
+        texto: "¿El catálogo de productos se sincroniza automáticamente entre canales?"
+        peso: 3
+
+  - id: administrativos
+    nombre: "Procesos Administrativos"
+    descripcion: "Evalúa la digitalización de procesos backoffice, facturación y reporting"
+    icono: "📋"
+    preguntas:
+      - id: adm_01
+        texto: "¿La facturación es electrónica y está automatizada?"
+        peso: 2
+      - id: adm_02
+        texto: "¿El proceso de compras y gestión de proveedores está digitalizado?"
+        peso: 2
+      - id: adm_03
+        texto: "¿Se genera reporting gerencial de forma automática?"
+        peso: 3
+      - id: adm_04
+        texto: "¿La gestión documental y de archivos es completamente digital?"
+        peso: 2
+
+  - id: ti
+    nombre: "TI y Sistemas"
+    descripcion: "Evalúa infraestructura tecnológica, seguridad e integraciones"
+    icono: "💻"
+    preguntas:
+      - id: ti_01
+        texto: "¿Los sistemas están integrados entre sí (ERP, CRM, POS, e-commerce)?"
+        peso: 3
+      - id: ti_02
+        texto: "¿Existe una política de seguridad de la información formalizada?"
+        peso: 3
+      - id: ti_03
+        texto: "¿Se realizan backups periódicos y se prueban regularmente?"
+        peso: 2
+      - id: ti_04
+        texto: "¿La infraestructura TI es escalable para soportar el crecimiento?"
+        peso: 2
+      - id: ti_05
+        texto: "¿Existe un área o responsable de TI con dedicación exclusiva?"
+        peso: 2
+
+  - id: rrhh
+    nombre: "RRHH y Gestión del Talento"
+    descripcion: "Evalúa procesos de selección, capacitación y evaluación del personal"
+    icono: "👥"
+    preguntas:
+      - id: rrhh_01
+        texto: "¿El proceso de selección y onboarding está digitalizado?"
+        peso: 2
+      - id: rrhh_02
+        texto: "¿Existe un sistema formal de evaluación de desempeño?"
+        peso: 2
+      - id: rrhh_03
+        texto: "¿Se realizan capacitaciones periódicas con registro documentado?"
+        peso: 3
+
+recomendaciones_por_area:
+  - area: inventario
+    niveles:
+      - score_max: 2.5
+        titulo: "Implementar sistema WMS"
+        texto: "Se recomienda implementar un Sistema de Gestión de Bodegas (WMS) con tracking en tiempo real, código de barras o RFID, y alertas automáticas de stock crítico. Esto permitirá reducir pérdidas por desabastecimiento y mejorar la precisión del inventario."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Optimizar procesos de inventario"
+        texto: "Se sugiere incorporar automatización parcial en los procesos de reposición y auditoría, así como integrar el inventario con los canales de venta para evitar sobreventas y roturas de stock."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Monitoreo y mejora continua"
+        texto: "El área de inventario se encuentra en buen nivel. Se recomienda mantener las prácticas actuales y evaluar mejoras incrementales como análisis predictivo de demanda."
+        prioridad: "Baja"
+
+  - area: ventas
+    niveles:
+      - score_max: 2.5
+        titulo: "Implementar CRM y digitalizar ventas"
+        texto: "Se recomienda implementar un sistema CRM integral que centralice la gestión de clientes, automatice el seguimiento de leads y digitalice el proceso de ventas. Esto mejorará la conversión y la experiencia del cliente."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Fortalecer canales de atención"
+        texto: "Se sugiere integrar los canales de atención en una plataforma omnicanal y mejorar el seguimiento postventa con automatización de comunicaciones."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Optimizar experiencia del cliente"
+        texto: "Las ventas y atención al cliente funcionan adecuadamente. Se recomienda implementar mejoras como chatbots, encuestas NPS automatizadas y personalización de ofertas."
+        prioridad: "Baja"
+
+  - area: logistica
+    niveles:
+      - score_max: 2.5
+        titulo: "Implementar WMS y automatizar despachos"
+        texto: "Se recomienda implementar un sistema WMS junto con automatización de procesos de despacho y tracking de envíos en tiempo real. Esto reducirá errores de picking y mejorará la experiencia de entrega."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Optimizar logística y tracking"
+        texto: "Se sugiere incorporar tracking de envíos para el cliente y optimizar la planificación de rutas con herramientas digitales de logística."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Mejora continua en logística"
+        texto: "La logística opera a buen nivel. Se recomienda explorar automatización avanzada y análisis de datos para optimizar rutas y costos."
+        prioridad: "Baja"
+
+  - area: ecommerce
+    niveles:
+      - score_max: 2.5
+        titulo: "Desarrollar e-commerce integrado"
+        texto: "Se recomienda implementar o migrar a una plataforma de e-commerce que se integre en tiempo real con el inventario y los sistemas de venta, y expandir la presencia en marketplaces."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Fortalecer omnicanalidad"
+        texto: "Se sugiere mejorar la integración entre canales online y físicos, automatizar la sincronización de catálogo y digitalizar el proceso de devoluciones."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Innovación en e-commerce"
+        texto: "El canal digital funciona correctamente. Se recomienda explorar personalización, recomendaciones inteligentes y expansión a nuevos marketplaces."
+        prioridad: "Baja"
+
+  - area: administrativos
+    niveles:
+      - score_max: 2.5
+        titulo: "Digitalizar procesos administrativos"
+        texto: "Se recomienda implementar un sistema ERP que automatice la facturación electrónica, compras, y reporting gerencial, eliminando procesos manuales y reduciendo errores."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Automatizar reporting y gestión documental"
+        texto: "Se sugiere automatizar la generación de reportes gerenciales y digitalizar completamente la gestión documental con un sistema de gestión documental."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Eficiencia administrativa"
+        texto: "Los procesos administrativos tienen buen nivel. Se recomienda mantener y buscar mejoras incrementales en automatización."
+        prioridad: "Baja"
+
+  - area: ti
+    niveles:
+      - score_max: 2.5
+        titulo: "Fortalecer infraestructura TI y seguridad"
+        texto: "Se recomienda realizar una auditoría de seguridad, implementar políticas formales, integrar los sistemas críticos (ERP, CRM, POS) y contratar personal de TI dedicado."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Mejorar integración y escalabilidad"
+        texto: "Se sugiere avanzar en la integración de sistemas, formalizar políticas de seguridad y backups, y evaluar la escalabilidad de la infraestructura."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Innovación tecnológica"
+        texto: "TI se encuentra en buen nivel. Se recomienda explorar tecnologías emergentes, cloud computing y mejorar la ciberseguridad preventiva."
+        prioridad: "Baja"
+
+  - area: rrhh
+    niveles:
+      - score_max: 2.5
+        titulo: "Digitalizar procesos de RRHH"
+        texto: "Se recomienda implementar un sistema integral de RRHH que digitalice selección, onboarding, evaluaciones de desempeño y capacitaciones."
+        prioridad: "Crítica"
+      - score_min: 2.5
+        score_max: 3.9
+        titulo: "Estructurar gestión del talento"
+        texto: "Se sugiere formalizar los procesos de evaluación de desempeño y capacitación con herramientas digitales, y digitalizar el onboarding."
+        prioridad: "Media"
+      - score_min: 4.0
+        titulo: "Desarrollo del talento"
+        texto: "RRHH funciona adecuadamente. Se recomienda implementar herramientas de climate laboral y planes de carrera digitales."
+        prioridad: "Baja"
