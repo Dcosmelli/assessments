@@ -653,6 +653,70 @@ body {
   background: var(--success);
 }
 
+/* Wizard steps indicator */
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.wizard-step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gray-400);
+  background: var(--white);
+  transition: var(--transition);
+}
+
+.wizard-step.active .wizard-step-circle {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.wizard-step.completed .wizard-step-circle {
+  border-color: var(--success);
+  background: var(--success);
+  color: white;
+}
+
+.wizard-step-label {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  white-space: nowrap;
+}
+
+.wizard-step.active .wizard-step-label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.wizard-step.completed .wizard-step-label {
+  color: var(--success);
+}
+
+.wizard-step-connector {
+  width: 48px;
+  height: 2px;
+  background: var(--gray-200);
+  margin-bottom: 22px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 640px) {
   .app-container {
     padding: 12px;
