@@ -112,6 +112,45 @@ const App = {
     });
   },
 
+  renderWelcomeStep2(container) {
+    const { config, clientData } = Questionnaire;
+    container.innerHTML = `
+      <div class="card welcome-section">
+        ${this._wizardIndicator(2)}
+        <h2>Datos del cliente</h2>
+        <div class="client-form">
+          <div class="form-group">
+            <label for="cliente">${config.cliente.etiqueta_razon_social}</label>
+            <input type="text" id="cliente" value="${clientData.razon_social}" placeholder="Ingrese la razón social">
+          </div>
+          <div class="form-group">
+            <label for="fecha">${config.cliente.etiqueta_fecha}</label>
+            <input type="text" id="fecha" value="${clientData.fecha}">
+          </div>
+        </div>
+        <div class="nav-buttons">
+          <button class="btn btn-secondary" id="btn-prev-step">← Anterior</button>
+          <button class="btn btn-primary" id="btn-next-step">Siguiente →</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('cliente')?.addEventListener('input', e => {
+      Questionnaire.setClientData('razon_social', e.target.value);
+    });
+    document.getElementById('fecha')?.addEventListener('input', e => {
+      Questionnaire.setClientData('fecha', e.target.value);
+    });
+    document.getElementById('btn-prev-step')?.addEventListener('click', () => {
+      this.welcomeStep = 1;
+      this.renderWelcome(document.getElementById('view-container'));
+    });
+    document.getElementById('btn-next-step')?.addEventListener('click', () => {
+      this.welcomeStep = 3;
+      this.renderWelcome(document.getElementById('view-container'));
+    });
+  },
+
   renderSection(container) {
     const section = Questionnaire.currentSection;
     if (!section) {
