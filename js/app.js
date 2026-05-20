@@ -151,6 +151,38 @@ const App = {
     });
   },
 
+  renderWelcomeStep3(container) {
+    const { clientData, sections, totalQuestions } = Questionnaire;
+    container.innerHTML = `
+      <div class="card welcome-section">
+        ${this._wizardIndicator(3)}
+        <h2>Resumen del assessment</h2>
+        <div style="text-align:left;margin:24px 0;line-height:1.8;">
+          <p><strong>Cliente:</strong> ${clientData.razon_social || '<em>Sin especificar</em>'}</p>
+          <p><strong>Fecha:</strong> ${clientData.fecha}</p>
+          <p style="margin-top:12px;"><strong>Áreas a evaluar (${sections.length}):</strong></p>
+          <ul style="list-style:none;padding:0;margin:8px 0 0;">
+            ${sections.map(s => `<li style="padding:4px 0;">${s.icono} ${s.nombre}</li>`).join('')}
+          </ul>
+          <p style="margin-top:12px;color:var(--gray-600);font-size:0.9rem;">Total de preguntas: <strong>${totalQuestions}</strong></p>
+        </div>
+        <div class="nav-buttons">
+          <button class="btn btn-secondary" id="btn-prev-step">← Anterior</button>
+          <button class="btn btn-primary btn-lg" id="btn-start">Comenzar Assessment →</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-prev-step')?.addEventListener('click', () => {
+      this.welcomeStep = 2;
+      this.renderWelcome(document.getElementById('view-container'));
+    });
+    document.getElementById('btn-start')?.addEventListener('click', () => {
+      Questionnaire.currentSectionIndex = 0;
+      this.showView('section');
+    });
+  },
+
   renderSection(container) {
     const section = Questionnaire.currentSection;
     if (!section) {
