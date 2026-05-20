@@ -16,6 +16,7 @@
   --gray-100: #f0f2f5;
   --gray-200: #e1e4e8;
   --gray-300: #c1c7cd;
+  --gray-400: #97a0af;
   --gray-600: #6b778c;
   --gray-800: #253858;
   --gray-900: #172b4d;
@@ -715,6 +716,10 @@ body {
   background: var(--gray-200);
   margin-bottom: 22px;
   flex-shrink: 0;
+}
+
+.wizard-step-connector.completed {
+  background: var(--success);
 }
 
 @media (max-width: 640px) {

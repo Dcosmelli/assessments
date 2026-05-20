@@ -58,7 +58,7 @@ const App = {
             <div class="wizard-step-circle">${n < currentStep ? '✓' : n}</div>
             <div class="wizard-step-label">${labels[i]}</div>
           </div>
-          ${n < 3 ? '<div class="wizard-step-connector"></div>' : ''}
+          ${n < 3 ? `<div class="wizard-step-connector ${n < currentStep ? 'completed' : ''}"></div>` : ''}
         `).join('')}
       </div>
     `;
