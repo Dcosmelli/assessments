@@ -64,6 +64,54 @@ const App = {
     `;
   },
 
+  renderWelcomeStep1(container) {
+    const { allSections, enabledSections } = Questionnaire;
+    container.innerHTML = `
+      <div class="card welcome-section">
+        ${this._wizardIndicator(1)}
+        <h2>¿Qué áreas querés evaluar?</h2>
+        <p><span id="area-count">${enabledSections.length}</span> área(s) seleccionada(s)</p>
+        <div class="section-toggles">
+          ${allSections.map(a => `
+            <label class="section-toggle ${enabledSections.includes(a.id) ? 'checked' : ''}" data-id="${a.id}">
+              <input type="checkbox" ${enabledSections.includes(a.id) ? 'checked' : ''}>
+              <span class="toggle-icon">${a.icono}</span>
+              <span class="toggle-content">
+                <span class="toggle-name">${a.nombre}</span>
+                <span class="toggle-desc">${a.descripcion}</span>
+              </span>
+              <span class="toggle-check">✓</span>
+            </label>
+          `).join('')}
+        </div>
+        <div class="nav-buttons" style="justify-content:flex-end">
+          <button class="btn btn-primary" id="btn-next-step" ${enabledSections.length === 0 ? 'disabled' : ''}>
+            Siguiente →
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('.section-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
+        if (e.target.tagName === 'INPUT') return;
+        const id = this.dataset.id;
+        Questionnaire.toggleSection(id);
+        this.classList.toggle('checked');
+        const cb = this.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        const count = Questionnaire.enabledSections.length;
+        document.getElementById('area-count').textContent = count;
+        document.getElementById('btn-next-step').disabled = count === 0;
+      });
+    });
+
+    document.getElementById('btn-next-step')?.addEventListener('click', () => {
+      this.welcomeStep = 2;
+      this.renderWelcome(document.getElementById('view-container'));
+    });
+  },
+
   renderSection(container) {
     const section = Questionnaire.currentSection;
     if (!section) {
