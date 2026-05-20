@@ -18,6 +18,7 @@ const App = {
       <div class="app-container">
         <header class="app-header">
           <h1>📋 Assessment de Procesos</h1>
+          <p>Retail de Productos Tecnológicos</p>
         </header>
 
         <div id="view-container"></div>
