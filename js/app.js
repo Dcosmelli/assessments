@@ -1,5 +1,6 @@
 const App = {
   currentView: 'welcome',
+  welcomeStep: 1,
 
   async init() {
     await Questionnaire.loadConfig();
@@ -17,7 +18,6 @@ const App = {
       <div class="app-container">
         <header class="app-header">
           <h1>📋 Assessment de Procesos</h1>
-          <p>Retail de Productos Tecnológicos</p>
         </header>
 
         <div id="view-container"></div>
@@ -29,6 +29,7 @@ const App = {
 
   showView(view) {
     this.currentView = view;
+    if (view === 'welcome') this.welcomeStep = 1;
     const container = document.getElementById('view-container');
     if (!container) return;
 
