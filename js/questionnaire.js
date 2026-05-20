@@ -3,6 +3,7 @@ const Questionnaire = {
   answers: {},
   observaciones: {},
   currentSectionIndex: 0,
+  enabledSections: [],
   clientData: { razon_social: '', fecha: '' },
 
   async loadConfig() {
@@ -13,10 +14,17 @@ const Questionnaire = {
       year: 'numeric', month: 'long', day: 'numeric'
     });
     this.clientData.fecha = today;
+    if (this.enabledSections.length === 0) {
+      this.enabledSections = this.config.areas.map(a => a.id);
+    }
+  },
+
+  get allSections() {
+    return this.config ? this.config.areas : [];
   },
 
   get sections() {
-    return this.config ? this.config.areas : [];
+    return this.allSections.filter(a => this.enabledSections.includes(a.id));
   },
 
   get totalSections() {
@@ -24,6 +32,7 @@ const Questionnaire = {
   },
 
   get currentSection() {
+    if (this.currentSectionIndex >= this.totalSections) return null;
     return this.sections[this.currentSectionIndex];
   },
 
@@ -46,6 +55,20 @@ const Questionnaire = {
     return this.sections.every(sec =>
       sec.preguntas.every(q => this.answers[q.id] !== undefined)
     );
+  },
+
+  isSectionEnabled(sectionId) {
+    return this.enabledSections.includes(sectionId);
+  },
+
+  toggleSection(sectionId) {
+    const idx = this.enabledSections.indexOf(sectionId);
+    if (idx >= 0) {
+      this.enabledSections.splice(idx, 1);
+    } else {
+      this.enabledSections.push(sectionId);
+    }
+    this.saveState();
   },
 
   setAnswer(questionId, value) {
@@ -77,7 +100,8 @@ const Questionnaire = {
         answers: this.answers,
         observaciones: this.observaciones,
         clientData: this.clientData,
-        currentSectionIndex: this.currentSectionIndex
+        currentSectionIndex: this.currentSectionIndex,
+        enabledSections: this.enabledSections
       };
       localStorage.setItem('assessment_state', JSON.stringify(state));
     } catch (e) { /* ignore */ }
@@ -92,6 +116,7 @@ const Questionnaire = {
         this.observaciones = state.observaciones || {};
         this.clientData = state.clientData || this.clientData;
         this.currentSectionIndex = state.currentSectionIndex || 0;
+        this.enabledSections = state.enabledSections || [];
       }
     } catch (e) { /* ignore */ }
   },
@@ -105,5 +130,6 @@ const Questionnaire = {
       year: 'numeric', month: 'long', day: 'numeric'
     });
     this.clientData = { razon_social: '', fecha: today };
+    this.enabledSections = this.config ? this.config.areas.map(a => a.id) : [];
   }
 };

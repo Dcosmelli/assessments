@@ -1,5 +1,5 @@
 const DocGenerator = {
-  async generate(config, answers, observaciones, clientData, scores, recomendaciones, resumen) {
+  async generate(config, answers, observaciones, clientData, scores, recomendaciones, resumen, activeSections) {
     const {
       Document, Packer, Paragraph, TextRun, HeadingLevel,
       AlignmentType, Table, TableRow, TableCell, WidthType,
@@ -7,26 +7,28 @@ const DocGenerator = {
       PageBreak
     } = docx;
 
+    let coverImageBuffer = null;
     let logoArrayBuffer = null;
     try {
-      const resp = await fetch('templates/logo.png');
-      if (resp.ok) {
-        const blob = await resp.blob();
-        logoArrayBuffer = await blob.arrayBuffer();
+      const resp1 = await fetch('templates/cover-image.png');
+      if (resp1.ok) {
+        coverImageBuffer = await (await resp1.blob()).arrayBuffer();
       }
-    } catch (e) { /* no logo available */ }
+    } catch (e) { /* no cover image */ }
+    try {
+      const resp2 = await fetch('templates/logo.png');
+      if (resp2.ok) {
+        logoArrayBuffer = await (await resp2.blob()).arrayBuffer();
+      }
+    } catch (e) { /* no logo */ }
 
     const PRIMARY = '172b4d';
     const GRAY = '666666';
-    const ACCENT = '00a3bf';
     const WHITE = 'FFFFFF';
     const LIGHT_BG = 'f0f2f5';
 
-    const font = { font: 'Arial' };
-
-    const headingStyle = (size, color, bold, spacing) => ({
-      run: { size, font: 'Arial', color, bold },
-      spacing: { after: spacing || 200 }
+    const headingStyle = (size, color, bold, underline) => ({
+      size, font: 'Arial', color, bold, underline
     });
     const normalStyle = { font: 'Arial', size: 22, color: '333333' };
 
@@ -36,14 +38,14 @@ const DocGenerator = {
       new Paragraph({ spacing: { before: 3000 }, children: [] })
     );
 
-    if (logoArrayBuffer) {
+    if (coverImageBuffer) {
       coverChildren.push(
         new Paragraph({
           alignment: AlignmentType.CENTER,
           children: [
             new ImageRun({
-              data: logoArrayBuffer,
-              transformation: { width: 200, height: 80, type: 'png' }
+              data: coverImageBuffer,
+              transformation: { width: 600, height: 567, type: 'png' }
             })
           ]
         })
@@ -58,7 +60,7 @@ const DocGenerator = {
         alignment: AlignmentType.RIGHT,
         spacing: { after: 100 },
         children: [
-          new TextRun({ text: config.titulo, ...headingStyle(52, PRIMARY, true, 0).run })
+          new TextRun({ text: config.titulo, ...headingStyle(52, PRIMARY, true, 'single') })
         ]
       })
     );
@@ -68,7 +70,7 @@ const DocGenerator = {
         alignment: AlignmentType.RIGHT,
         spacing: { after: 200 },
         children: [
-          new TextRun({ text: config.subtitulo, ...headingStyle(30, GRAY, false, 0).run })
+          new TextRun({ text: config.subtitulo, ...headingStyle(30, GRAY, false, undefined) })
         ]
       })
     );
@@ -81,20 +83,21 @@ const DocGenerator = {
           alignment: AlignmentType.RIGHT,
           spacing: { after: 100 },
           children: [
-            new TextRun({ text: 'Cliente:', ...headingStyle(24, PRIMARY, true, 0).run }),
-            new TextRun({ text: `  ${clientData.razon_social}`, ...headingStyle(24, GRAY, false, 0).run })
+            new TextRun({ text: clientData.razon_social, font: 'Roboto', size: 79, color: PRIMARY, bold: true })
           ]
         })
       );
     }
+
+    coverChildren.push(new Paragraph({ spacing: { after: 400 }, children: [] }));
 
     coverChildren.push(
       new Paragraph({
         alignment: AlignmentType.RIGHT,
         spacing: { after: 100 },
         children: [
-          new TextRun({ text: 'Fecha:', ...headingStyle(24, PRIMARY, true, 0).run }),
-          new TextRun({ text: `  ${clientData.fecha}`, ...headingStyle(24, GRAY, false, 0).run })
+          new TextRun({ text: 'Fecha:', ...headingStyle(24, PRIMARY, true, undefined) }),
+          new TextRun({ text: `  ${clientData.fecha}`, ...headingStyle(24, GRAY, false, undefined) })
         ]
       })
     );
@@ -107,14 +110,14 @@ const DocGenerator = {
             heading: HeadingLevel.HEADING_1,
             spacing: { before: pageBreak ? 0 : 400, after: 200 },
             children: [
-              new TextRun({ text, ...headingStyle(40, PRIMARY, true, 0).run })
+              new TextRun({ text, ...headingStyle(40, PRIMARY, true, undefined) })
             ]
           })
         : new Paragraph({
             heading: HeadingLevel.HEADING_2,
             spacing: { before: 360, after: 120 },
             children: [
-              new TextRun({ text, ...headingStyle(32, PRIMARY, true, 0).run })
+              new TextRun({ text, ...headingStyle(32, PRIMARY, true, undefined) })
             ]
           });
       if (pageBreak) {
@@ -132,7 +135,7 @@ const DocGenerator = {
         spacing: { after: spacing },
         alignment: opts.align || AlignmentType.JUSTIFIED,
         children: [
-          new TextRun({ text, ...headingStyle(size, color, bold, 0).run })
+          new TextRun({ text, ...headingStyle(size, color, bold, undefined) })
         ]
       });
     }
@@ -162,7 +165,7 @@ const DocGenerator = {
             alignment,
             spacing: { before: 40, after: 40 },
             children: [
-              new TextRun({ text, ...headingStyle(size, color, bold, 0).run })
+              new TextRun({ text, ...headingStyle(size, color, bold, undefined) })
             ]
           })
         ]
@@ -176,10 +179,8 @@ const DocGenerator = {
       right: { style: BorderStyle.SINGLE, size: 1, color: 'cccccc' }
     };
 
-    // ---- TITLE PAGE BREAK ----
     contentChildren.push(new Paragraph({ children: [new PageBreak()], spacing: { before: 0 } }));
 
-    // ---- TABLE OF CONTENTS ----
     contentChildren.push(...addHeading('Contenido', 1));
     const tocItems = [
       'Resumen Ejecutivo',
@@ -193,18 +194,17 @@ const DocGenerator = {
         new Paragraph({
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: `${i + 1}. ${item}`, ...headingStyle(22, PRIMARY, true, 0).run }),
+            new TextRun({ text: `${i + 1}. ${item}`, ...headingStyle(22, PRIMARY, true, undefined) }),
             new TextRun({ text: `  .........  ${i + 3}`, ...normalStyle })
           ]
         })
       );
     });
 
-    // ---- RESULT SECTION: EXECUTIVE SUMMARY ----
     contentChildren.push(...addHeading('Resumen Ejecutivo', 1, true));
 
     contentChildren.push(
-      addPara(`El presente Assessment de Procesos fue realizado para ${clientData.razon_social || 'el cliente'} con el objetivo de detectar problemas operativos que puedan ser solucionados mediante implementaciones tecnológicas. Se evaluaron ${config.areas.length} áreas de negocio, obteniendo los siguientes resultados:`)
+      addPara(`El presente Assessment de Procesos fue realizado para ${clientData.razon_social || 'el cliente'} con el objetivo de detectar problemas operativos que puedan ser solucionados mediante implementaciones tecnológicas. Se evaluaron ${activeSections.length} áreas de negocio, obteniendo los siguientes resultados:`)
     );
 
     contentChildren.push(addPara(''));
@@ -214,7 +214,6 @@ const DocGenerator = {
     contentChildren.push(addPara(`Áreas en nivel Saludable: ${resumen.saludables}`, { color: '36b37e', bold: true }));
     contentChildren.push(addPara(''));
 
-    // Summary table
     const summaryRows = [
       new TableRow({
         tableHeader: true,
@@ -248,10 +247,9 @@ const DocGenerator = {
       })
     );
 
-    // ---- DETAIL BY AREA ----
     contentChildren.push(...addHeading('Detalle por Área', 1, true));
 
-    scores.forEach((s, idx) => {
+    scores.forEach((s) => {
       contentChildren.push(...addHeading(`${s.icono} ${s.nombre} — ${s.nivelIcono} ${s.nivel} (${s.score.toFixed(1)}/5)`, 2));
 
       const detailRows = [
@@ -266,18 +264,23 @@ const DocGenerator = {
         })
       ];
 
-      const areaConfig = config.areas.find(a => a.id === s.id);
+      const areaConfig = activeSections.find(a => a.id === s.id);
       s.detalles.forEach((d, i) => {
-        const respText = d.respuesta !== null
-          ? ['1', '2', '3', '4', '5'][d.respuesta - 1] || `${d.respuesta}`
-          : '—';
+        let respText;
+        if (d.respuesta === 0) {
+          respText = 'No';
+        } else if (d.respuesta !== null) {
+          respText = ['1', '2', '3', '4', '5'][d.respuesta - 1] || `${d.respuesta}`;
+        } else {
+          respText = '—';
+        }
         const bgColor = i % 2 === 0 ? LIGHT_BG : WHITE;
         detailRows.push(
           new TableRow({
             children: [
               makeTableCell(`${i + 1}`, { width: 400, alignment: AlignmentType.CENTER, shading: bgColor }),
               makeTableCell(d.pregunta, { width: 3800, shading: bgColor, size: 18 }),
-              makeTableCell(respText, { width: 1200, alignment: AlignmentType.CENTER, shading: bgColor, bold: true }),
+              makeTableCell(respText, { width: 1200, alignment: AlignmentType.CENTER, shading: bgColor, bold: true, color: d.respuesta === 0 ? 'ff5630' : undefined }),
               makeTableCell(`${d.peso}`, { width: 600, alignment: AlignmentType.CENTER, shading: bgColor })
             ]
           })
@@ -310,7 +313,6 @@ const DocGenerator = {
       }
     });
 
-    // ---- PRIORITIZATION ----
     contentChildren.push(...addHeading('Priorización', 1, true));
     contentChildren.push(
       addPara('A continuación se presenta el ranking de áreas ordenadas por nivel de criticidad, priorizando aquellas con menor puntaje:')
@@ -353,18 +355,17 @@ const DocGenerator = {
       })
     );
 
-    // ---- RECOMMENDATIONS ----
     contentChildren.push(...addHeading('Recomendaciones', 1, true));
     contentChildren.push(
       addPara('En función de los resultados obtenidos, se presentan las siguientes recomendaciones tecnológicas para cada área evaluada:')
     );
 
-    recomendaciones.forEach((rec, i) => {
+    recomendaciones.forEach((rec) => {
       contentChildren.push(
         new Paragraph({
           spacing: { before: 300, after: 60 },
           children: [
-            new TextRun({ text: `${rec.areaIcono} ${rec.area}`, ...headingStyle(24, PRIMARY, true, 0).run })
+            new TextRun({ text: `${rec.areaIcono} ${rec.area}`, ...headingStyle(24, PRIMARY, true, undefined) })
           ]
         })
       );
@@ -374,8 +375,8 @@ const DocGenerator = {
         new Paragraph({
           spacing: { after: 40 },
           children: [
-            new TextRun({ text: `[${rec.prioridad}] `, ...headingStyle(20, prioColors[rec.prioridad] || PRIMARY, true, 0).run }),
-            new TextRun({ text: rec.titulo, ...headingStyle(22, PRIMARY, true, 0).run })
+            new TextRun({ text: `[${rec.prioridad}] `, ...headingStyle(20, prioColors[rec.prioridad] || PRIMARY, true, undefined) }),
+            new TextRun({ text: rec.titulo, ...headingStyle(22, PRIMARY, true, undefined) })
           ]
         })
       );
@@ -391,7 +392,6 @@ const DocGenerator = {
       );
     });
 
-    // ---- GENERAL OBSERVATIONS ----
     contentChildren.push(...addHeading('Observaciones Generales', 1, true));
     contentChildren.push(
       addPara('El siguiente análisis busca ser una guía para la toma de decisiones estratégicas en materia de transformación digital. Se recomienda abordar las áreas críticas de forma prioritaria y establecer un plan de acción con hitos medibles.')
@@ -402,7 +402,7 @@ const DocGenerator = {
       new Paragraph({
         spacing: { before: 200, after: 100 },
         children: [
-          new TextRun({ text: '🚨  Riesgos identificados:', ...headingStyle(24, 'ff5630', true, 0).run })
+          new TextRun({ text: '🚨  Riesgos identificados:', ...headingStyle(24, 'ff5630', true, undefined) })
         ]
       })
     );
@@ -421,7 +421,7 @@ const DocGenerator = {
       new Paragraph({
         spacing: { before: 200, after: 100 },
         children: [
-          new TextRun({ text: '💡  Oportunidades de innovación:', ...headingStyle(24, '00a3bf', true, 0).run })
+          new TextRun({ text: '💡  Oportunidades de innovación:', ...headingStyle(24, '00a3bf', true, undefined) })
         ]
       })
     );
@@ -435,7 +435,6 @@ const DocGenerator = {
       contentChildren.push(addPara('Todas las áreas requieren mejoras sustanciales antes de considerar innovaciones.'));
     }
 
-    // ---- BUILD DOCUMENT ----
     const doc = new Document({
       styles: {
         default: {

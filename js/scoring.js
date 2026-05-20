@@ -1,6 +1,6 @@
 const Scoring = {
-  calculate(config, answers) {
-    const areas = config.areas;
+  calculate(config, answers, activeSections) {
+    const areas = activeSections || config.areas;
     const scores = [];
 
     areas.forEach(area => {
@@ -93,7 +93,7 @@ const Scoring = {
     const criticos = scores.filter(s => s.nivel === 'Crítico').length;
     const atencion = scores.filter(s => s.nivel === 'Atención').length;
     const saludables = scores.filter(s => s.nivel === 'Saludable').length;
-    const promedio = scores.reduce((sum, s) => sum + s.score, 0) / scores.length;
+    const promedio = scores.length > 0 ? scores.reduce((sum, s) => sum + s.score, 0) / scores.length : 0;
 
     return { criticos, atencion, saludables, promedio };
   }

@@ -40,22 +40,29 @@ const App = {
   },
 
   renderWelcome(container) {
-    const { config, clientData } = Questionnaire;
-    const areas = config.areas;
+    const { config, clientData, allSections, enabledSections } = Questionnaire;
+    const enabledCount = enabledSections.length;
 
     container.innerHTML = `
       <div class="card welcome-section">
         <div class="welcome-icon">🔍</div>
         <h2>Bienvenido al Assessment de Procesos</h2>
-        <p>Este cuestionario evaluará <strong>${areas.length} áreas</strong> de tu empresa para identificar oportunidades de mejora tecnológica.</p>
+        <p>Este cuestionario evaluará <strong id="area-count">${enabledCount} área(s)</strong> de tu empresa para identificar oportunidades de mejora tecnológica.</p>
         <p>Completarlo te llevará aproximadamente <strong>10-15 minutos</strong>.</p>
 
-        <div class="welcome-features">
-          ${areas.map(a => `
-            <div class="feature-item">
-              <h4>${a.icono} ${a.nombre}</h4>
-              <p>${a.descripcion}</p>
-            </div>
+        <h3 style="text-align:left;margin:24px 0 12px;color:var(--primary);font-size:1rem;">Seleccioná las áreas a evaluar:</h3>
+
+        <div class="section-toggles">
+          ${allSections.map(a => `
+            <label class="section-toggle ${enabledSections.includes(a.id) ? 'checked' : ''}" data-id="${a.id}">
+              <input type="checkbox" ${enabledSections.includes(a.id) ? 'checked' : ''}>
+              <span class="toggle-icon">${a.icono}</span>
+              <span class="toggle-content">
+                <span class="toggle-name">${a.nombre}</span>
+                <span class="toggle-desc">${a.descripcion}</span>
+              </span>
+              <span class="toggle-check">✓</span>
+            </label>
           `).join('')}
         </div>
 
@@ -76,6 +83,18 @@ const App = {
       </div>
     `;
 
+    document.querySelectorAll('.section-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
+        if (e.target.tagName === 'INPUT') return;
+        const id = this.dataset.id;
+        Questionnaire.toggleSection(id);
+        this.classList.toggle('checked');
+        const cb = this.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        document.getElementById('area-count').textContent = Questionnaire.enabledSections.length + ' área(s)';
+      });
+    });
+
     document.getElementById('cliente')?.addEventListener('input', e => {
       Questionnaire.setClientData('razon_social', e.target.value);
     });
@@ -83,6 +102,10 @@ const App = {
       Questionnaire.setClientData('fecha', e.target.value);
     });
     document.getElementById('btn-start')?.addEventListener('click', () => {
+      if (Questionnaire.enabledSections.length === 0) {
+        alert('Seleccioná al menos un área para evaluar.');
+        return;
+      }
       Questionnaire.currentSectionIndex = 0;
       this.showView('section');
     });
@@ -135,6 +158,10 @@ const App = {
               <div class="question-item" data-qid="${q.id}">
                 <div class="question-text">${qi + 1}. ${q.texto}</div>
                 <div class="question-options" data-qid="${q.id}">
+                  <button class="option-btn no-btn ${selected === 0 ? 'selected' : ''}" data-value="0">
+                    No
+                    <span class="option-label">No existe</span>
+                  </button>
                   ${[1, 2, 3, 4, 5].map(v => `
                     <button class="option-btn ${selected === v ? 'selected' : ''}" data-value="${v}">
                       ${v}
@@ -208,8 +235,8 @@ const App = {
   },
 
   renderResults(container) {
-    const { config, answers, observaciones, clientData } = Questionnaire;
-    const scores = Scoring.calculate(config, answers);
+    const { config, answers, observaciones, clientData, sections } = Questionnaire;
+    const scores = Scoring.calculate(config, answers, sections);
     const recomendaciones = Scoring.getRecomendaciones(config, scores);
     const resumen = Scoring.getResumen(scores);
 
@@ -281,7 +308,7 @@ const App = {
       btn.disabled = true;
       btn.textContent = '⏳ Generando informe...';
       try {
-        await DocGenerator.generate(config, answers, observaciones, clientData, scores, recomendaciones, resumen);
+        await DocGenerator.generate(config, answers, observaciones, clientData, scores, recomendaciones, resumen, sections);
       } catch (e) {
         alert('Error al generar el documento: ' + e.message);
         console.error(e);
