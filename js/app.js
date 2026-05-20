@@ -42,75 +42,26 @@ const App = {
   },
 
   renderWelcome(container) {
-    const { config, clientData, allSections, enabledSections } = Questionnaire;
-    const enabledCount = enabledSections.length;
+    switch (this.welcomeStep) {
+      case 1: this.renderWelcomeStep1(container); break;
+      case 2: this.renderWelcomeStep2(container); break;
+      case 3: this.renderWelcomeStep3(container); break;
+    }
+  },
 
-    container.innerHTML = `
-      <div class="card welcome-section">
-        <div class="welcome-icon">🔍</div>
-        <h2>Bienvenido al Assessment de Procesos</h2>
-        <p>Este cuestionario evaluará <strong id="area-count">${enabledCount} área(s)</strong> de tu empresa para identificar oportunidades de mejora tecnológica.</p>
-        <p>Completarlo te llevará aproximadamente <strong>10-15 minutos</strong>.</p>
-
-        <h3 style="text-align:left;margin:24px 0 12px;color:var(--primary);font-size:1rem;">Seleccioná las áreas a evaluar:</h3>
-
-        <div class="section-toggles">
-          ${allSections.map(a => `
-            <label class="section-toggle ${enabledSections.includes(a.id) ? 'checked' : ''}" data-id="${a.id}">
-              <input type="checkbox" ${enabledSections.includes(a.id) ? 'checked' : ''}>
-              <span class="toggle-icon">${a.icono}</span>
-              <span class="toggle-content">
-                <span class="toggle-name">${a.nombre}</span>
-                <span class="toggle-desc">${a.descripcion}</span>
-              </span>
-              <span class="toggle-check">✓</span>
-            </label>
-          `).join('')}
-        </div>
-
-        <div class="client-form">
-          <div class="form-group">
-            <label for="cliente">${config.cliente.etiqueta_razon_social}</label>
-            <input type="text" id="cliente" value="${clientData.razon_social}" placeholder="Ingrese la razón social">
+  _wizardIndicator(currentStep) {
+    const labels = ['Secciones', 'Cliente', 'Confirmar'];
+    return `
+      <div class="wizard-steps">
+        ${[1, 2, 3].map((n, i) => `
+          <div class="wizard-step ${n === currentStep ? 'active' : n < currentStep ? 'completed' : ''}">
+            <div class="wizard-step-circle">${n < currentStep ? '✓' : n}</div>
+            <div class="wizard-step-label">${labels[i]}</div>
           </div>
-          <div class="form-group">
-            <label for="fecha">${config.cliente.etiqueta_fecha}</label>
-            <input type="text" id="fecha" value="${clientData.fecha}">
-          </div>
-        </div>
-
-        <button class="btn btn-primary btn-lg" id="btn-start">
-          Comenzar Assessment →
-        </button>
+          ${n < 3 ? '<div class="wizard-step-connector"></div>' : ''}
+        `).join('')}
       </div>
     `;
-
-    document.querySelectorAll('.section-toggle').forEach(toggle => {
-      toggle.addEventListener('click', function(e) {
-        if (e.target.tagName === 'INPUT') return;
-        const id = this.dataset.id;
-        Questionnaire.toggleSection(id);
-        this.classList.toggle('checked');
-        const cb = this.querySelector('input[type="checkbox"]');
-        cb.checked = !cb.checked;
-        document.getElementById('area-count').textContent = Questionnaire.enabledSections.length + ' área(s)';
-      });
-    });
-
-    document.getElementById('cliente')?.addEventListener('input', e => {
-      Questionnaire.setClientData('razon_social', e.target.value);
-    });
-    document.getElementById('fecha')?.addEventListener('input', e => {
-      Questionnaire.setClientData('fecha', e.target.value);
-    });
-    document.getElementById('btn-start')?.addEventListener('click', () => {
-      if (Questionnaire.enabledSections.length === 0) {
-        alert('Seleccioná al menos un área para evaluar.');
-        return;
-      }
-      Questionnaire.currentSectionIndex = 0;
-      this.showView('section');
-    });
   },
 
   renderSection(container) {
