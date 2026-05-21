@@ -65,15 +65,17 @@ const DocGenerator = {
       })
     );
 
-    coverChildren.push(
-      new Paragraph({
-        alignment: AlignmentType.RIGHT,
-        spacing: { after: 200 },
-        children: [
-          new TextRun({ text: config.subtitulo, ...headingStyle(30, GRAY, false, undefined) })
-        ]
-      })
-    );
+    if (config.subtitulo) {
+      coverChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          spacing: { after: 200 },
+          children: [
+            new TextRun({ text: config.subtitulo, ...headingStyle(30, GRAY, false, undefined) })
+          ]
+        })
+      );
+    }
 
     coverChildren.push(new Paragraph({ spacing: { after: 600 }, children: [] }));
 
