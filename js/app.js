@@ -177,7 +177,12 @@ const App = {
       this.renderWelcome(document.getElementById('view-container'));
     });
     document.getElementById('btn-start')?.addEventListener('click', () => {
+      if (Questionnaire.enabledSections.length === 0) {
+        alert('Seleccioná al menos un área para evaluar.');
+        return;
+      }
       Questionnaire.currentSectionIndex = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       this.showView('section');
     });
   },
@@ -282,6 +287,7 @@ const App = {
     });
 
     document.getElementById('btn-prev')?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       if (Questionnaire.currentSectionIndex > 0) {
         Questionnaire.currentSectionIndex--;
         this.showView('section');
@@ -295,6 +301,7 @@ const App = {
         alert('Por favor respondé todas las preguntas antes de continuar.');
         return;
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       if (Questionnaire.currentSectionIndex < Questionnaire.totalSections - 1) {
         Questionnaire.currentSectionIndex++;
         this.showView('section');

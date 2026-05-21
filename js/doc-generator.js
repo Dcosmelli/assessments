@@ -7,18 +7,11 @@ const DocGenerator = {
       PageBreak
     } = docx;
 
-    let coverImageBuffer = null;
     let logoArrayBuffer = null;
     try {
-      const resp1 = await fetch('templates/cover-image.png');
-      if (resp1.ok) {
-        coverImageBuffer = await (await resp1.blob()).arrayBuffer();
-      }
-    } catch (e) { /* no cover image */ }
-    try {
-      const resp2 = await fetch('templates/logo.png');
-      if (resp2.ok) {
-        logoArrayBuffer = await (await resp2.blob()).arrayBuffer();
+      const resp = await fetch('templates/logo.png');
+      if (resp.ok) {
+        logoArrayBuffer = await (await resp.blob()).arrayBuffer();
       }
     } catch (e) { /* no logo */ }
 
@@ -34,68 +27,50 @@ const DocGenerator = {
 
     const coverChildren = [];
 
-    coverChildren.push(
-      new Paragraph({ spacing: { before: 3000 }, children: [] })
-    );
-
-    if (coverImageBuffer) {
+    if (logoArrayBuffer) {
       coverChildren.push(
         new Paragraph({
           alignment: AlignmentType.CENTER,
+          spacing: { before: 1400, after: 400 },
           children: [
             new ImageRun({
-              data: coverImageBuffer,
-              transformation: { width: 600, height: 567, type: 'png' }
+              data: logoArrayBuffer,
+              transformation: { width: 260, height: 104, type: 'png' }
             })
           ]
         })
       );
-      coverChildren.push(new Paragraph({ spacing: { after: 600 }, children: [] }));
     } else {
-      coverChildren.push(new Paragraph({ spacing: { after: 3600 }, children: [] }));
+      coverChildren.push(new Paragraph({ spacing: { before: 2000 }, children: [] }));
     }
-
-    coverChildren.push(
-      new Paragraph({
-        alignment: AlignmentType.RIGHT,
-        spacing: { after: 100 },
-        children: [
-          new TextRun({ text: config.titulo, ...headingStyle(52, PRIMARY, true, 'single') })
-        ]
-      })
-    );
-
-    if (config.subtitulo) {
-      coverChildren.push(
-        new Paragraph({
-          alignment: AlignmentType.RIGHT,
-          spacing: { after: 200 },
-          children: [
-            new TextRun({ text: config.subtitulo, ...headingStyle(30, GRAY, false, undefined) })
-          ]
-        })
-      );
-    }
-
-    coverChildren.push(new Paragraph({ spacing: { after: 600 }, children: [] }));
 
     if (clientData.razon_social) {
       coverChildren.push(
         new Paragraph({
-          alignment: AlignmentType.RIGHT,
+          alignment: AlignmentType.CENTER,
           spacing: { after: 100 },
           children: [
-            new TextRun({ text: clientData.razon_social, font: 'Roboto', size: 79, color: PRIMARY, bold: true })
+            new TextRun({ text: clientData.razon_social, ...headingStyle(52, PRIMARY, true, 'single') })
           ]
         })
       );
     }
 
-    coverChildren.push(new Paragraph({ spacing: { after: 400 }, children: [] }));
+    coverChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+        children: [
+          new TextRun({ text: config.titulo, ...headingStyle(30, GRAY, false, undefined) })
+        ]
+      })
+    );
+
+    coverChildren.push(new Paragraph({ spacing: { after: 600 }, children: [] }));
 
     coverChildren.push(
       new Paragraph({
-        alignment: AlignmentType.RIGHT,
+        alignment: AlignmentType.CENTER,
         spacing: { after: 100 },
         children: [
           new TextRun({ text: 'Fecha:', ...headingStyle(24, PRIMARY, true, undefined) }),
@@ -458,11 +433,11 @@ const DocGenerator = {
               ? new Header({
                   children: [
                     new Paragraph({
-                      alignment: AlignmentType.RIGHT,
+                      alignment: AlignmentType.LEFT,
                       children: [
                         new ImageRun({
                           data: logoArrayBuffer,
-                          transformation: { width: 100, height: 40, type: 'png' }
+                          transformation: { width: 130, height: 52, type: 'png' }
                         })
                       ]
                     })
@@ -474,10 +449,8 @@ const DocGenerator = {
             default: new Footer({
               children: [
                 new Paragraph({
-                  alignment: AlignmentType.CENTER,
+                  alignment: AlignmentType.RIGHT,
                   children: [
-                    new TextRun({ text: 'Assessment de Procesos — Retail Tecnológico', size: 16, color: GRAY, font: 'Arial' }),
-                    new TextRun({ text: '  |  Página ', size: 16, color: GRAY, font: 'Arial' }),
                     new TextRun({ children: [PageNumber.CURRENT], size: 16, color: GRAY, font: 'Arial' })
                   ]
                 })
